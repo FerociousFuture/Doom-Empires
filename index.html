@@ -3,294 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doom Empire - Army Builder</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Doom Empire | War Game Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
         :root {
-            --primary: #e67e22;
-            --bg-dark: #1a1a1a;
-            --bg-card: #2c2c2c;
-            --text-light: #f0f0f0;
-            --border: #444;
+            --primary-fire: #ff6600;
+            --secondary-fire: #ffcc00;
+            --bg-dark: #0a0a0a;
+            --bg-card: #141414;
+            --border-glow: rgba(255, 102, 0, 0.3);
+            --text-light: #e0e0e0;
         }
 
+        * { box-sizing: border-box; transition: all 0.25s ease; }
+
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-light);
             margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)),
+                url('https://www.transparenttextures.com/patterns/dark-matter.png');
         }
 
+        /* --- Header Estilo Campaña --- */
         header {
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://www.transparenttextures.com/patterns/dark-leather.png');
-            background-color: #000;
-            padding: 20px;
+            padding: 40px 20px;
             text-align: center;
-            border-bottom: 3px solid var(--primary);
+            background: linear-gradient(to bottom, #000, transparent);
+            border-bottom: 2px solid var(--primary-fire);
+            box-shadow: 0 0 20px var(--border-glow);
         }
 
-        h1 { font-family: 'Cinzel', serif; color: var(--primary); margin: 0; letter-spacing: 2px; }
+        .logo-text {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            color: var(--primary-fire);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin: 0;
+            text-shadow: 3px 3px 0px #000, 0 0 15px var(--primary-fire);
+        }
+
+        .slogan {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 8px;
+            color: var(--text-light);
+            margin-top: 10px;
+            opacity: 0.8;
+        }
 
         .container {
             display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 20px;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-            flex-grow: 1;
+            grid-template-columns: 320px 1fr;
+            gap: 30px;
+            padding: 40px;
+            max-width: 1400px;
+            margin: auto;
         }
 
-        /* Panel Izquierdo: Selección */
+        /* --- Sidebar de Reclutamiento --- */
         .sidebar {
             background: var(--bg-card);
-            padding: 15px;
-            border-radius: 8px;
+            padding: 25px;
+            border-radius: 4px;
+            border: 1px solid #333;
             height: fit-content;
+            position: sticky; top: 20px;
         }
 
-        .faction-select {
+        .faction-select, .army-title-input {
             width: 100%;
-            padding: 10px;
-            background: #444;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-
-        .unit-item {
-            background: #3d3d3d;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 4px;
+            padding: 12px;
+            background: #000;
+            color: var(--primary-fire);
+            border: 1px solid var(--primary-fire);
+            font-weight: 900;
+            text-transform: uppercase;
             cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            transition: 0.2s;
-        }
-
-        .unit-item:hover { background: var(--primary); color: white; }
-
-        /* Panel Derecho: Lista */
-        .main-content {
-            background: var(--bg-card);
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        .army-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 15px;
             margin-bottom: 20px;
         }
 
-        .points-badge {
-            background: var(--primary);
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 1.2rem;
+        .army-title-input {
+            color: white;
+            text-transform: none;
+            font-family: 'Inter', sans-serif;
         }
 
-        .added-unit {
-            background: #383838;
-            border-left: 5px solid var(--primary);
+        .unit-card-add {
+            background: #1a1a1a;
             padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-            position: relative;
-        }
-
-        .controls {
+            margin-bottom: 10px;
+            border-left: 3px solid #444;
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
             align-items: center;
-            margin-top: 10px;
-        }
-
-        .controls input, .controls select {
-            background: #222;
-            color: white;
-            border: 1px solid var(--border);
-            padding: 5px;
-            border-radius: 3px;
-        }
-
-        .remove-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #c0392b;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 3px;
             cursor: pointer;
+            font-weight: 700;
         }
 
-        .limit-warning {
-            color: #ffcc00;
-            font-size: 0.8rem;
-            margin-top: 5px;
-            display: none;
+        .unit-card-add:hover {
+            border-left-color: var(--primary-fire);
+            background: #252525;
+            transform: scale(1.02);
         }
 
-        @media (max-width: 768px) {
-            .container { grid-template-columns: 1fr; }
+        /* --- Panel de Lista --- */
+        .points-panel {
+            background: linear-gradient(90deg, #000, #222);
+            padding: 20px 40px;
+            border-radius: 4px;
+            border-right: 5px solid var(--primary-fire);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .total-points {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--primary-fire);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .unit-instance {
+            background: var(--bg-card);
+            border: 1px solid #333;
+            margin-bottom: 20px;
+            padding: 25px;
+            position: relative;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.5);
+        }
+
+        .unit-instance:hover { border-color: var(--primary-fire); }
+
+        .unit-instance h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: var(--secondary-fire);
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .grid-controls {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px; margin-top: 20px;
+        }
+
+        label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 900;
+            color: #888;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 2px;
+        }
+
+        .btn-remove {
+            position: absolute; top: 20px; right: 20px;
+            background: none; border: 1px solid #444; color: #666;
+            padding: 5px 10px; cursor: pointer; font-size: 0.7rem;
+        }
+
+        .btn-remove:hover { border-color: #ff0000; color: #ff0000; }
+
+        .subtotal-area {
+            margin-top: 20px;
+            text-align: right;
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: var(--primary-fire);
+        }
+
+        .btn-download {
+            background: var(--primary-fire);
+            color: black;
+            border: none;
+            padding: 12px 25px;
+            font-weight: 900;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(255, 102, 0, 0.4);
+        }
+
+        .btn-download:hover { background: white; color: black; }
+
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; padding: 15px; }
+            .logo-text { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>DOOM EMPIRE</h1>
-    <p>List Builder v1.0</p>
+    <h1 class="logo-text">Doom Empire</h1>
+    <div class="slogan">FAST • BRUTAL • DECISIVE</div>
 </header>
 
 <div class="container">
     <aside class="sidebar">
-        <h3>Facciones</h3>
-        <select id="factionSelect" class="faction-select" onchange="loadUnits()">
+        <label>Nombre del Ejército</label>
+        <input type="text" id="armyName" class="army-title-input" placeholder="Nombre de tu lista...">
+        
+        <label>Seleccionar Legión</label>
+        <select id="fSelect" class="faction-select" onchange="loadCatalog()">
             <option value="Estados Cruzados">Estados Cruzados</option>
             <option value="Imperio Mexica">Imperio Mexica</option>
         </select>
-        <div id="unitCatalog"></div>
+        <div id="catalog"></div>
     </aside>
 
-    <main class="main-content">
-        <div class="army-header">
-            <h2>Mi Ejército</h2>
-            <div class="points-badge"><span id="totalPoints">0</span> pts</div>
+    <main>
+        <div class="points-panel">
+            <div>
+                <h2 style="margin:0; font-family: 'Cinzel';">Fuerza de Combate</h2>
+                <span style="color:#666; font-size: 0.8rem;">RECLUTAMIENTO EN CURSO</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 30px;">
+                <button class="btn-download" onclick="generatePDF()">Descargar PDF</button>
+                <div class="total-points"><span id="totalPoints">0</span> <small style="font-size: 1rem;">PTS</small></div>
+            </div>
         </div>
         <div id="armyList"></div>
     </main>
 </div>
 
 <script>
-    // Datos integrados según tus especificaciones
-    const DATA = {
-        "Estados Cruzados": [
-            { name: "Caballero Verde", cost: 22, min: 1, hasOptions: false },
-            { name: "Caballeros Templarios", cost: 14, min: 3, hasOptions: false },
-            { name: "Caballeros Cruzados", cost: 11, min: 5, hasOptions: true, 
-              options: [{n:"Espada", p:0}, {n:"Hacha", p:2}, {n:"Martillo", p:4}, {n:"Lanza", p:0}] },
-            { name: "Caballeros Leprosos", cost: 12, min: 5, hasOptions: false },
-            { name: "Hombres de Armas", cost: 7, min: 10, hasOptions: true,
-              options: [{n:"Espada", p:0}, {n:"Hacha", p:1}, {n:"Martillo", p:4}] },
-            { name: "Campesinos", cost: 4, min: 10, hasOptions: false }
-        ],
-        "Imperio Mexica": [
-            { name: "Camatoz", cost: 22, min: 1, hasOptions: false },
-            { name: "Guerreros Jaguar", cost: 11, min: 5, hasOptions: false },
-            { name: "Cuextecatl", cost: 9, min: 10, hasOptions: true,
-              options: [{n:"Macuahuitl", p:0}, {n:"Mazo", p:2}] },
-            { name: "Cuextecatl Lanza", cost: 7, min: 10, hasOptions: false },
-            { name: "Arqueros Totolt", cost: 6, min: 10, hasOptions: true,
-              options: [{n:"Arco", p:0}, {n:"Atlatl", p:5}] }
-        ]
-    };
+const DATA = {
+    "Estados Cruzados": [
+        { name: "Caballero Verde", sizes: [1], costs: [22], hasSpecials: false },
+        { name: "Caballeros Templarios", sizes: [3, 5, 10], costs: [42, 70, 140], hasSpecials: false },
+        { name: "Caballeros Cruzados", sizes: [5, 10, 15, 20], costs: [55, 110, 165, 220], hasSpecials: true, baseWeaponPrice: 11,
+          options: [{n:"Ninguna / Espada", p:11}, {n:"Hacha", p:13}, {n:"Martillo", p:15}, {n:"Lanza", p:11}] },
+        { name: "Caballeros Leprosos", sizes: [5, 10, 15, 20], costs: [60, 120, 180, 240], hasSpecials: false },
+        { name: "Hombres de Armas", sizes: [10, 15, 20, 25, 30], costs: [70, 105, 140, 175, 210], hasSpecials: true, baseWeaponPrice: 7,
+          options: [{n:"Ninguna / Espada", p:7}, {n:"Hacha", p:8}, {n:"Martillo", p:11}] },
+        { name: "Campesinos", sizes: [10, 15, 20, 25, 30, 35, 40], costs: [40, 60, 80, 100, 120, 140, 160], hasSpecials: false }
+    ],
+    "Imperio Mexica": [
+        { name: "Camatoz", sizes: [1], costs: [22], hasSpecials: false },
+        { name: "Guerreros Jaguar", sizes: [5, 10, 15, 20], costs: [55, 110, 165, 220], hasSpecials: false },
+        { name: "Cuextecatl", sizes: [10, 15, 20, 25, 30], costs: [90, 135, 180, 225, 270], hasSpecials: true, baseWeaponPrice: 9,
+          options: [{n:"Ninguna / Macuahuitl", p:9}, {n:"Mazo", p:11}] },
+        { name: "Cuextecatl Lanza", sizes: [10, 15, 20, 25, 30], costs: [70, 105, 140, 175, 210], hasSpecials: false },
+        { name: "Arqueros Totolt", sizes: [10, 15, 20], costs: [60, 90, 120], hasSpecials: true, baseWeaponPrice: 6,
+          options: [{n:"Ninguna / Arco", p:6}, {n:"Atlatl", p:11}] },
+        { name: "Yaokis", sizes: [30, 35, 40], costs: [120, 140, 160], hasSpecials: false }
+    ]
+};
 
-    let myArmy = [];
+let myArmy = [];
 
-    function loadUnits() {
-        const faction = document.getElementById('factionSelect').value;
-        const catalog = document.getElementById('unitCatalog');
-        catalog.innerHTML = '';
-        
-        DATA[faction].forEach(unit => {
-            const div = document.createElement('div');
-            div.className = 'unit-item';
-            div.innerHTML = `<span>${unit.name}</span> <span>${unit.cost} pts</span>`;
-            div.onclick = () => addToArmy(unit);
-            catalog.appendChild(div);
-        });
-    }
+function loadCatalog() {
+    const f = document.getElementById('fSelect').value;
+    const cat = document.getElementById('catalog');
+    cat.innerHTML = '';
+    DATA[f].forEach(u => {
+        const d = document.createElement('div');
+        d.className = 'unit-card-add';
+        d.innerHTML = `<span>${u.name}</span> <span style="color:var(--primary-fire)">+</span>`;
+        d.onclick = () => { myArmy.push({...u, id: Date.now(), sIdx: 0, w1: 0, w2: 0}); render(); };
+        cat.appendChild(d);
+    });
+}
 
-    function addToArmy(template) {
-        const newInstance = {
-            ...template,
-            id: Date.now(),
-            size: template.min,
-            specialQty: 0,
-            selectedOptionIndex: 0
-        };
-        myArmy.push(newInstance);
-        renderArmy();
-    }
+function render() {
+    const list = document.getElementById('armyList');
+    list.innerHTML = '';
+    let total = 0;
 
-    function updateUnit(id, field, value) {
-        const unit = myArmy.find(u => u.id === id);
-        if (field === 'size') unit.size = parseInt(value);
-        if (field === 'specialQty') {
-            // Validación: Máximo 2 armas especiales
-            unit.specialQty = Math.min(parseInt(value), 2);
+    myArmy.forEach((unit, i) => {
+        const baseCost = unit.costs[unit.sIdx];
+        let finalCost = baseCost;
+
+        if(unit.hasSpecials) {
+            finalCost += (unit.options[unit.w1].p - unit.baseWeaponPrice);
+            finalCost += (unit.options[unit.w2].p - unit.baseWeaponPrice);
         }
-        if (field === 'option') unit.selectedOptionIndex = parseInt(value);
-        renderArmy();
-    }
 
-    function removeUnit(id) {
-        myArmy = myArmy.filter(u => u.id !== id);
-        renderArmy();
-    }
-
-    function renderArmy() {
-        const listContainer = document.getElementById('armyList');
-        const totalPointsDisplay = document.getElementById('totalPoints');
-        listContainer.innerHTML = '';
-        let total = 0;
-
-        myArmy.forEach(unit => {
-            let unitTotal = unit.size * unit.cost;
-            
-            // Sumar extras si tiene opciones
-            if (unit.hasOptions) {
-                const extra = unit.options[unit.selectedOptionIndex].p;
-                unitTotal += (unit.specialQty * extra);
-            }
-
-            total += unitTotal;
-
-            const div = document.createElement('div');
-            div.className = 'added-unit';
-            div.innerHTML = `
-                <button class="remove-btn" onclick="removeUnit(${unit.id})">X</button>
-                <h3>${unit.name}</h3>
-                <div class="controls">
-                    <div>
-                        <label>Tamaño:</label>
-                        <input type="number" value="${unit.size}" min="${unit.min}" onchange="updateUnit(${unit.id}, 'size', this.value)">
-                    </div>
-                    ${unit.hasOptions ? `
-                        <div>
-                            <label>Arma Esp:</label>
-                            <select onchange="updateUnit(${unit.id}, 'option', this.value)">
-                                ${unit.options.map((o, i) => `<option value="${i}" ${unit.selectedOptionIndex === i ? 'selected':''}>${o.n}</option>`).join('')}
-                            </select>
-                            <input type="number" value="${unit.specialQty}" min="0" max="2" style="width:40px" onchange="updateUnit(${unit.id}, 'specialQty', this.value)">
-                        </div>
-                    ` : ''}
-                    <div style="margin-left:auto; font-weight:bold; color:var(--primary)">${unitTotal} pts</div>
+        total += finalCost;
+        const card = document.createElement('div');
+        card.className = 'unit-instance';
+        card.innerHTML = `
+            <button class="btn-remove" onclick="myArmy.splice(${i},1); render();">ELIMINAR</button>
+            <h3>${unit.name}</h3>
+            <div class="grid-controls">
+                <div>
+                    <label>Bloque de Unidad</label>
+                    <select onchange="myArmy[${i}].sIdx=this.selectedIndex; render();">
+                        ${unit.sizes.map((s, idx) => `<option value="${idx}" ${unit.sIdx==idx?'selected':''}>${s} Miniaturas (${unit.costs[idx]} pts)</option>`).join('')}
+                    </select>
                 </div>
-                ${unit.hasOptions ? `<div class="limit-warning" style="display:block">* Máx 2 armas especiales por unidad</div>` : ''}
-            `;
-            listContainer.appendChild(div);
-        });
+                ${unit.hasSpecials ? `
+                <div>
+                    <label>Mejora Arma 1</label>
+                    <select onchange="myArmy[${i}].w1=this.selectedIndex; render();">
+                        ${unit.options.map((o, idx) => `<option value="${idx}" ${unit.w1==idx?'selected':''}>${o.n}</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label>Mejora Arma 2</label>
+                    <select onchange="myArmy[${i}].w2=this.selectedIndex; render();">
+                        ${unit.options.map((o, idx) => `<option value="${idx}" ${unit.w2==idx?'selected':''}>${o.n}</option>`).join('')}
+                    </select>
+                </div>` : ''}
+            </div>
+            <div class="subtotal-area">TOTAL UNIDAD: ${finalCost} PTS</div>
+        `;
+        list.appendChild(card);
+    });
+    document.getElementById('totalPoints').innerText = total;
+}
 
-        totalPointsDisplay.innerText = total;
-    }
+function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const armyTitle = document.getElementById('armyName').value || "Lista de Ejército";
+    const faction = document.getElementById('fSelect').value;
+    const total = document.getElementById('totalPoints').innerText;
 
-    // Carga inicial
-    loadUnits();
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    doc.text(armyTitle.toUpperCase(), 14, 20);
+    
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`FACCION: ${faction.toUpperCase()}`, 14, 30);
+    doc.text(`FUERZA TOTAL: ${total} PTS`, 14, 37);
+
+    const body = myArmy.map(u => {
+        let cost = u.costs[u.sIdx];
+        let weapons = "EQUIPO BASE";
+        if(u.hasSpecials) {
+            cost += (u.options[u.w1].p - u.baseWeaponPrice) + (u.options[u.w2].p - u.baseWeaponPrice);
+            weapons = `${u.options[u.w1].n} / ${u.options[u.w2].n}`;
+        }
+        return [u.name, u.sizes[u.sIdx], weapons, `${cost} pts`];
+    });
+
+    doc.autoTable({
+        startY: 45,
+        head: [['UNIDAD', 'MINIS', 'EQUIPO / MEJORAS', 'COSTE']],
+        body: body,
+        theme: 'grid',
+        headStyles: { fillColor: [255, 102, 0], textColor: [0, 0, 0] },
+        styles: { fontSize: 10 }
+    });
+
+    doc.save(`${armyTitle.replace(/\s+/g, '_')}.pdf`);
+}
+
+loadCatalog();
 </script>
-
 </body>
 </html>
