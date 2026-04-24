@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doom Empire - Army Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e67e22;
+            --bg-dark: #1a1a1a;
+            --bg-card: #2c2c2c;
+            --text-light: #f0f0f0;
+            --border: #444;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://www.transparenttextures.com/patterns/dark-leather.png');
+            background-color: #000;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        h1 { font-family: 'Cinzel', serif; color: var(--primary); margin: 0; letter-spacing: 2px; }
+
+        .container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-grow: 1;
+        }
+
+        /* Panel Izquierdo: Selección */
+        .sidebar {
+            background: var(--bg-card);
+            padding: 15px;
+            border-radius: 8px;
+            height: fit-content;
+        }
+
+        .faction-select {
+            width: 100%;
+            padding: 10px;
+            background: #444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .unit-item {
+            background: #3d3d3d;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            transition: 0.2s;
+        }
+
+        .unit-item:hover { background: var(--primary); color: white; }
+
+        /* Panel Derecho: Lista */
+        .main-content {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .army-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .points-badge {
+            background: var(--primary);
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .added-unit {
+            background: #383838;
+            border-left: 5px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .controls input, .controls select {
+            background: #222;
+            color: white;
+            border: 1px solid var(--border);
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #c0392b;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .limit-warning {
+            color: #ffcc00;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>DOOM EMPIRE</h1>
+    <p>List Builder v1.0</p>
+</header>
+
+<div class="container">
+    <aside class="sidebar">
+        <h3>Facciones</h3>
+        <select id="factionSelect" class="faction-select" onchange="loadUnits()">
+            <option value="Estados Cruzados">Estados Cruzados</option>
+            <option value="Imperio Mexica">Imperio Mexica</option>
+        </select>
+        <div id="unitCatalog"></div>
+    </aside>
+
+    <main class="main-content">
+        <div class="army-header">
+            <h2>Mi Ejército</h2>
+            <div class="points-badge"><span id="totalPoints">0</span> pts</div>
+        </div>
+        <div id="armyList"></div>
+    </main>
+</div>
+
+<script>
+    // Datos integrados según tus especificaciones
+    const DATA = {
+        "Estados Cruzados": [
+            { name: "Caballero Verde", cost: 22, min: 1, hasOptions: false },
+            { name: "Caballeros Templarios", cost: 14, min: 3, hasOptions: false },
+            { name: "Caballeros Cruzados", cost: 11, min: 5, hasOptions: true, 
+              options: [{n:"Espada", p:0}, {n:"Hacha", p:2}, {n:"Martillo", p:4}, {n:"Lanza", p:0}] },
+            { name: "Caballeros Leprosos", cost: 12, min: 5, hasOptions: false },
+            { name: "Hombres de Armas", cost: 7, min: 10, hasOptions: true,
+              options: [{n:"Espada", p:0}, {n:"Hacha", p:1}, {n:"Martillo", p:4}] },
+            { name: "Campesinos", cost: 4, min: 10, hasOptions: false }
+        ],
+        "Imperio Mexica": [
+            { name: "Camatoz", cost: 22, min: 1, hasOptions: false },
+            { name: "Guerreros Jaguar", cost: 11, min: 5, hasOptions: false },
+            { name: "Cuextecatl", cost: 9, min: 10, hasOptions: true,
+              options: [{n:"Macuahuitl", p:0}, {n:"Mazo", p:2}] },
+            { name: "Cuextecatl Lanza", cost: 7, min: 10, hasOptions: false },
+            { name: "Arqueros Totolt", cost: 6, min: 10, hasOptions: true,
+              options: [{n:"Arco", p:0}, {n:"Atlatl", p:5}] }
+        ]
+    };
+
+    let myArmy = [];
+
+    function loadUnits() {
+        const faction = document.getElementById('factionSelect').value;
+        const catalog = document.getElementById('unitCatalog');
+        catalog.innerHTML = '';
+        
+        DATA[faction].forEach(unit => {
+            const div = document.createElement('div');
+            div.className = 'unit-item';
+            div.innerHTML = `<span>${unit.name}</span> <span>${unit.cost} pts</span>`;
+            div.onclick = () => addToArmy(unit);
+            catalog.appendChild(div);
+        });
+    }
+
+    function addToArmy(template) {
+        const newInstance = {
+            ...template,
+            id: Date.now(),
+            size: template.min,
+            specialQty: 0,
+            selectedOptionIndex: 0
+        };
+        myArmy.push(newInstance);
+        renderArmy();
+    }
+
+    function updateUnit(id, field, value) {
+        const unit = myArmy.find(u => u.id === id);
+        if (field === 'size') unit.size = parseInt(value);
+        if (field === 'specialQty') {
+            // Validación: Máximo 2 armas especiales
+            unit.specialQty = Math.min(parseInt(value), 2);
+        }
+        if (field === 'option') unit.selectedOptionIndex = parseInt(value);
+        renderArmy();
+    }
+
+    function removeUnit(id) {
+        myArmy = myArmy.filter(u => u.id !== id);
+        renderArmy();
+    }
+
+    function renderArmy() {
+        const listContainer = document.getElementById('armyList');
+        const totalPointsDisplay = document.getElementById('totalPoints');
+        listContainer.innerHTML = '';
+        let total = 0;
+
+        myArmy.forEach(unit => {
+            let unitTotal = unit.size * unit.cost;
+            
+            // Sumar extras si tiene opciones
+            if (unit.hasOptions) {
+                const extra = unit.options[unit.selectedOptionIndex].p;
+                unitTotal += (unit.specialQty * extra);
+            }
+
+            total += unitTotal;
+
+            const div = document.createElement('div');
+            div.className = 'added-unit';
+            div.innerHTML = `
+                <button class="remove-btn" onclick="removeUnit(${unit.id})">X</button>
+                <h3>${unit.name}</h3>
+                <div class="controls">
+                    <div>
+                        <label>Tamaño:</label>
+                        <input type="number" value="${unit.size}" min="${unit.min}" onchange="updateUnit(${unit.id}, 'size', this.value)">
+                    </div>
+                    ${unit.hasOptions ? `
+                        <div>
+                            <label>Arma Esp:</label>
+                            <select onchange="updateUnit(${unit.id}, 'option', this.value)">
+                                ${unit.options.map((o, i) => `<option value="${i}" ${unit.selectedOptionIndex === i ? 'selected':''}>${o.n}</option>`).join('')}
+                            </select>
+                            <input type="number" value="${unit.specialQty}" min="0" max="2" style="width:40px" onchange="updateUnit(${unit.id}, 'specialQty', this.value)">
+                        </div>
+                    ` : ''}
+                    <div style="margin-left:auto; font-weight:bold; color:var(--primary)">${unitTotal} pts</div>
+                </div>
+                ${unit.hasOptions ? `<div class="limit-warning" style="display:block">* Máx 2 armas especiales por unidad</div>` : ''}
+            `;
+            listContainer.appendChild(div);
+        });
+
+        totalPointsDisplay.innerText = total;
+    }
+
+    // Carga inicial
+    loadUnits();
+</script>
+
+</body>
+</html>
