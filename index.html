@@ -4,202 +4,1004 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doom Empire | War Game Builder</title>
-    <link rel="icon" type="image/jpeg" href="LogoDE.jpeg">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700;900&family=Barlow+Condensed:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    
     <style>
         :root {
-            --primary-fire: #ff6600;
-            --secondary-fire: #ffcc00;
-            --bg-dark: #0a0a0a;
-            --bg-card: #141414;
-            --text-light: #e0e0e0;
+            --fire: #ff6600;
+            --gold: #d4a017;
+            --gold-light: #f0c040;
+            --bg: #080808;
+            --bg2: #101010;
+            --bg3: #181818;
+            --bg4: #222222;
+            --border: #2a2a2a;
+            --border2: #3a3a3a;
+            --text: #ddd;
+            --text-dim: #777;
+            --text-bright: #fff;
+            --accent-ec: #c8a84b;
+            --accent-im: #4bb8c8;
+            --red: #cc3333;
         }
 
-        * { box-sizing: border-box; transition: all 0.25s ease; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            margin: 0;
-            background-image: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.95)), url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            font-family: 'Barlow Condensed', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            font-size: 15px;
         }
 
+        /* ===== HEADER ===== */
         header {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 2px solid var(--primary-fire);
             background: #000;
+            border-bottom: 2px solid var(--fire);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 30px rgba(255,102,0,0.15);
         }
 
-        .main-logo { max-width: 250px; width: 60%; filter: drop-shadow(0 0 8px var(--primary-fire)); }
-
-        .container {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 20px;
-            padding: 20px;
-            max-width: 1400px;
-            margin: auto;
-        }
-
-        .sidebar { background: var(--bg-card); padding: 20px; border: 1px solid #333; height: fit-content; }
-
-        .faction-select, .army-title-input {
-            width: 100%; padding: 12px; background: #000; color: var(--primary-fire);
-            border: 1px solid var(--primary-fire); font-weight: 900; margin-bottom: 15px;
-        }
-
-        .unit-card-add {
-            background: #1a1a1a; padding: 12px; margin-bottom: 8px;
-            border-left: 3px solid #444; display: flex; justify-content: space-between; cursor: pointer;
-        }
-
-        .unit-card-add:hover { border-left-color: var(--primary-fire); background: #252525; }
-
-        .points-panel {
-            background: linear-gradient(90deg, #000, #222);
-            padding: 20px; border-right: 5px solid var(--primary-fire);
-            display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;
-        }
-
-        .unit-instance {
-            background: var(--bg-card); border: 1px solid #333;
-            margin-bottom: 20px; padding: 20px; position: relative;
-            box-shadow: 6px 6px 0px rgba(0,0,0,0.6);
-        }
-
-        .grid-controls { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px; }
-
-        label { font-size: 0.7rem; font-weight: 900; color: #888; text-transform: uppercase; display: block; margin-bottom: 5px; }
-
-        select, input[type="number"], input[type="text"] { width: 100%; padding: 10px; background: #2a2a2a; color: white; border: 1px solid #444; }
-
-        .btn-remove { position: absolute; top: 15px; right: 15px; background: none; border: 1px solid #444; color: #666; padding: 5px 10px; cursor: pointer; }
-        .btn-remove:hover { color: #ff4444; border-color: #ff4444; }
-
-        .btn-download {
-            background: var(--primary-fire); color: black; border: none;
-            padding: 15px; font-weight: 900; font-family: 'Cinzel'; cursor: pointer;
-        }
-
-        .subtotal-area {
-            margin-top: 20px;
-            text-align: right;
+        .header-brand {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1rem, 3vw, 1.6rem);
             font-weight: 900;
-            font-size: 1.4rem;
-            color: var(--primary-fire);
-            border-top: 1px solid #333;
-            padding-top: 10px;
+            color: var(--fire);
+            letter-spacing: 4px;
+            text-transform: uppercase;
         }
 
-        .weapon-slot {
-            background: rgba(255, 102, 0, 0.05);
-            border: 1px dashed #444;
+        .header-sub {
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            color: var(--text-dim);
+            font-family: 'Barlow Condensed', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .header-pts {
+            text-align: right;
+        }
+
+        .header-pts .pts-num {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 900;
+            color: var(--fire);
+            line-height: 1;
+        }
+
+        .header-pts .pts-label {
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        /* ===== LAYOUT ===== */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+        .sidebar-section {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-label {
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .army-name-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg3);
+            color: var(--text-bright);
+            border: 1px solid var(--border2);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .army-name-input:focus { border-color: var(--fire); }
+
+        .faction-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .faction-tab {
+            padding: 10px 8px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .faction-tab:hover { border-color: var(--border2); color: var(--text); }
+        .faction-tab.active-ec { background: rgba(200,168,75,0.15); border-color: var(--accent-ec); color: var(--accent-ec); }
+        .faction-tab.active-im { background: rgba(75,184,200,0.15); border-color: var(--accent-im); color: var(--accent-im); }
+
+        /* Unit add cards in sidebar */
+        .catalog-title {
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            padding: 16px 16px 8px;
+            font-weight: 600;
+        }
+
+        .catalog-list { padding: 0 8px 16px; }
+
+        .unit-add-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .unit-add-btn:hover {
+            background: var(--bg4);
+            border-color: var(--fire);
+        }
+
+        .unit-add-btn .unit-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .unit-add-btn .unit-min-cost {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .unit-add-btn .add-icon {
+            width: 22px;
+            height: 22px;
+            background: var(--bg);
+            border: 1px solid var(--border2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--fire);
+            font-size: 1rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* ===== MAIN AREA ===== */
+        .main-area {
+            background: var(--bg);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--fire);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .btn-primary:hover { background: #ff8833; }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--border2);
+            padding: 12px 20px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-secondary:hover { border-color: var(--text-dim); color: var(--text); }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-dim);
+        }
+
+        .empty-state h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--border2);
+        }
+
+        .empty-state p { font-size: 0.9rem; }
+
+        /* ===== UNIT CARD ===== */
+        .unit-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .unit-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--bg3);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .unit-card-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gold-light);
+        }
+
+        .unit-card-header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .unit-subtotal {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--fire);
+        }
+
+        .btn-remove {
+            background: none;
+            border: 1px solid var(--border2);
+            color: var(--text-dim);
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-remove:hover { border-color: var(--red); color: var(--red); }
+
+        .unit-card-body {
+            padding: 16px;
+        }
+
+        /* Stat block – WarOrgan style */
+        .stat-block {
+            border: 1px solid var(--border2);
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+
+        .stat-block-title {
+            background: var(--bg4);
+            padding: 5px 10px;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat-row:last-child { border-bottom: none; }
+
+        .stat-cell {
+            text-align: center;
+            padding: 8px 4px;
+            border-right: 1px solid var(--border);
+        }
+
+        .stat-cell:last-child { border-right: none; }
+
+        .stat-key {
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .stat-val {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-bright);
+        }
+
+        /* Weapons table */
+        .weapons-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            margin-bottom: 14px;
+        }
+
+        .weapons-table th {
+            background: var(--bg4);
+            padding: 5px 8px;
+            text-align: left;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border2);
+        }
+
+        .weapons-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            vertical-align: top;
+        }
+
+        .weapons-table tr:last-child td { border-bottom: none; }
+
+        .weapons-table .weapon-name {
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .weapon-tags {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* Special rules */
+        .special-rules {
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+
+        .special-rule-item {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .special-rule-item:last-child { border-bottom: none; }
+
+        .rule-name {
+            font-weight: 700;
+            color: var(--gold);
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+        }
+
+        .rule-desc {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        /* Controls */
+        .unit-controls {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        @media (min-width: 600px) {
+            .unit-controls { grid-template-columns: 1.5fr 1fr 1fr; }
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .control-group select,
+        .control-group input[type="number"] {
+            width: 100%;
+            padding: 9px 10px;
+            background: var(--bg3);
+            color: var(--text-bright);
+            border: 1px solid var(--border2);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .control-group select:focus,
+        .control-group input[type="number"]:focus {
+            border-color: var(--fire);
+        }
+
+        .weapon-upgrade-box {
+            background: rgba(255,102,0,0.04);
+            border: 1px dashed var(--border2);
             padding: 10px;
-            border-radius: 4px;
         }
 
-        @media (min-width: 900px) {
-            .container { grid-template-columns: 320px 1fr; }
-            .points-panel { flex-direction: row; align-items: center; justify-content: space-between; }
-            .grid-controls { grid-template-columns: 1.2fr 1fr 1fr; }
+        .equip-summary {
+            margin-top: 10px;
+            padding: 8px 10px;
+            background: var(--bg3);
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            border-left: 3px solid var(--fire);
         }
 
-        @media (max-width: 899px) { .container { grid-template-columns: 1fr; } }
+        /* Faction indicator */
+        .faction-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+            border: 1px solid;
+        }
+
+        .faction-badge.ec { border-color: var(--accent-ec); color: var(--accent-ec); }
+        .faction-badge.im { border-color: var(--accent-im); color: var(--accent-im); }
+
+        /* Faction rule panel */
+        .faction-rule-panel {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .faction-rule-header {
+            padding: 10px 16px;
+            background: var(--bg3);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .faction-rule-header h4 {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .faction-rule-header h4.ec { color: var(--accent-ec); }
+        .faction-rule-header h4.im { color: var(--accent-im); }
+
+        .toggle-icon { color: var(--text-dim); font-size: 0.8rem; transition: transform 0.2s; }
+        .faction-rule-panel.open .toggle-icon { transform: rotate(180deg); }
+
+        .faction-rule-body {
+            display: none;
+            padding: 14px 16px;
+        }
+
+        .faction-rule-panel.open .faction-rule-body { display: block; }
+
+        .rule-section-title {
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            margin-top: 14px;
+            font-weight: 700;
+        }
+
+        .rule-section-title:first-child { margin-top: 0; }
+
+        .etapa-row {
+            display: grid;
+            grid-template-columns: auto 1fr 1.5fr;
+            gap: 8px;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+            font-size: 0.83rem;
+        }
+
+        .etapa-row:last-child { border-bottom: none; }
+
+        .etapa-num {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            color: var(--gold);
+            font-size: 0.9rem;
+        }
+
+        .etapa-name { font-weight: 600; color: var(--text); }
+        .etapa-effect { color: var(--text-dim); font-size: 0.8rem; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .main-area { padding: 14px; }
+
+            .header-brand { font-size: 1.1rem; }
+        }
+
+        /* ===== SCROLLBAR GLOBAL ===== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+        /* Highlight on select */
+        select option { background: #111; }
+
+        /* Divider */
+        .section-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 14px 0;
+        }
+
+        .army-summary-bar {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .summary-item { text-align: center; }
+
+        .summary-item .val {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-bright);
+        }
+
+        .summary-item .lbl {
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="LogoDE.jpeg" alt="Doom Empire" class="main-logo">
-    <div style="font-family:'Cinzel'; letter-spacing:5px; font-size:0.8rem; margin-top:10px; color: #eee;">FAST • BRUTAL • DECISIVE</div>
+    <div>
+        <div class="header-brand">⚔ Doom Empire</div>
+        <div class="header-sub">Fast • Brutal • Decisive</div>
+    </div>
+    <div class="header-pts">
+        <div class="pts-num" id="headerTotal">0</div>
+        <div class="pts-label">Puntos Totales</div>
+    </div>
 </header>
 
-<div class="container">
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
     <aside class="sidebar">
-        <label>Nombre del Ejército</label>
-        <input type="text" id="armyName" class="army-title-input" placeholder="Mi Horda...">
-        <label>Facción</label>
-        <select id="fSelect" class="faction-select" onchange="loadCatalog()">
-            <option value="Estados Cruzados">Estados Cruzados</option>
-            <option value="Imperio Mexica">Imperio Mexica</option>
-        </select>
-        <div id="catalog"></div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">Nombre del Ejército</div>
+            <input type="text" id="armyName" class="army-name-input" placeholder="Mi Horda de Guerra...">
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">Facción</div>
+            <div class="faction-tabs">
+                <button class="faction-tab active-ec" id="tab-ec" onclick="setFaction('Estados Cruzados')">✝ Cruzados</button>
+                <button class="faction-tab" id="tab-im" onclick="setFaction('Imperio Mexica')">🐆 Mexica</button>
+            </div>
+        </div>
+
+        <div class="catalog-title" id="catalogTitle">Unidades Disponibles</div>
+        <div class="catalog-list" id="catalog"></div>
     </aside>
 
-    <main>
-        <div class="points-panel">
-            <div style="flex: 1;">
-                <h2 style="margin:0; font-family: 'Cinzel'; font-size: 1rem;">Total de Puntos</h2>
-                <div style="font-size: 2.5rem; color: var(--primary-fire); font-weight: 900;"><span id="totalPoints">0</span> <small style="font-size: 1rem;">PTS</small></div>
-            </div>
-            <button class="btn-download" onclick="generatePDF()">Descargar PDF</button>
+    <!-- MAIN -->
+    <main class="main-area">
+
+        <div class="toolbar">
+            <button class="btn-primary" onclick="generatePDF()">⬇ Descargar Hoja PDF</button>
+            <button class="btn-secondary" onclick="clearArmy()">✕ Limpiar Ejército</button>
         </div>
-        <div id="armyList"></div>
+
+        <div id="factionRulePanel"></div>
+
+        <div id="armySummary" style="display:none" class="army-summary-bar">
+            <div class="summary-item">
+                <div class="val" id="sumUnits">0</div>
+                <div class="lbl">Unidades</div>
+            </div>
+            <div class="summary-item">
+                <div class="val" id="sumMinis">0</div>
+                <div class="lbl">Miniaturas</div>
+            </div>
+            <div class="summary-item">
+                <div class="val" id="sumPts">0</div>
+                <div class="lbl">Puntos</div>
+            </div>
+        </div>
+
+        <div id="armyList">
+            <div class="empty-state">
+                <h3>⚔ El campo de batalla espera</h3>
+                <p>Selecciona unidades del panel lateral para añadirlas a tu ejército.</p>
+            </div>
+        </div>
+
     </main>
 </div>
 
 <script>
-const DATA = {
+// =============================================
+// DATA — Unit profiles matching PDFs
+// =============================================
+const STATS = {
+    "Estados Cruzados": {
+        rule: {
+            name: "Deus Vult",
+            icon: "✝",
+            desc: "Antes de activar la primera miniatura de cualquier unidad durante tu fase de activación, puedes declarar Deus Vult. Hasta el final del turno, todas tus unidades obtienen: +1D6 a tiradas de carga, +1 Habilidad de Combate, +1 a Habilidad de Carga Devastadora.",
+            etapas: null
+        },
+        units: {
+            "Caballero Verde": {
+                emoji: "🟢",
+                profile: { VID:12, MOV:'6"', HA:'3+', AT:3, SAL:'3+', ESC:'4+', CAR:'2D6' },
+                weapons: [
+                    { name:"Martillo de Guerra Castellano", tags:"Piercing 3, Daño 4" }
+                ],
+                special: [
+                    { name:"Defensor de Tiro", desc:'Las unidades aliadas a 3" o menos obtienen Escudado 4+.' },
+                    { name:"Deus Vult", desc:'Selecciona una unidad a 12" o menos. Esa unidad se considera en Deus Vult durante este turno.' }
+                ],
+                charge: '4D6 impactos al 4+, Daño 3'
+            },
+            "Caballeros Templarios": {
+                emoji: "🐎",
+                profile: { VID:5, MOV:'10"', HA:'4+', AT:2, SAL:'4+', ESC:'5+', CAR:'3D6' },
+                weapons: [
+                    { name:"Lanza Templaria", tags:"Piercing 2, Daño 1" }
+                ],
+                special: [],
+                charge: '3D6 impactos al 4+, Daño 2'
+            },
+            "Caballeros Cruzados": {
+                emoji: "🐎",
+                profile: { VID:4, MOV:'12"', HA:'5+', AT:2, SAL:'5+', ESC:'—', CAR:'3D6' },
+                weapons: [
+                    { name:"Espada (Base)", tags:"Piercing 1, Daño 1" },
+                    { name:"Hacha", tags:"Piercing 1, Daño 2" },
+                    { name:"Martillo de Guerra Cruzado", tags:"Piercing 3, Daño 2" },
+                    { name:"Lanza", tags:"Pierde ataques, +1 tirada devastadora por mini" }
+                ],
+                special: [
+                    { name:"Lanza de Caballería", desc:"Si la miniatura tiene lanza equipada, cuando la unidad realiza una carga, añade 1 al daño de carga devastadora." }
+                ],
+                charge: '2D6 impactos al 5+, Daño 2'
+            },
+            "Caballeros Leprosos": {
+                emoji: "☠️",
+                profile: { VID:2, MOV:'5"', HA:'4+', AT:2, SAL:'3+', ESC:'—', CAR:'1D6' },
+                weapons: [
+                    { name:"Martillo de Guerra", tags:"Piercing 2, Daño 2" }
+                ],
+                special: [
+                    { name:"Último Aliento", desc:"Cada vez que una miniatura de esta unidad es destruida, antes de retirarla puede realizar inmediatamente una acción de ataque." }
+                ],
+                charge: '1D6 impactos al 5+, Daño 1'
+            },
+            "Hombres de Armas": {
+                emoji: "⚔️",
+                profile: { VID:2, MOV:'6"', HA:'5+', AT:2, SAL:'4+', ESC:'5+', CAR:'2D6' },
+                weapons: [
+                    { name:"Espada (Base)", tags:"Piercing 1, Daño 1" },
+                    { name:"Hacha", tags:"Piercing 1, Daño 2" },
+                    { name:"Martillo de Guerra Cruzado", tags:"Piercing 3, Daño 2" }
+                ],
+                special: [],
+                charge: 'Sin carga devastadora'
+            },
+            "Campesinos": {
+                emoji: "🌾",
+                profile: { VID:1, MOV:'5"', HA:'6+', AT:1, SAL:'5+', ESC:'—', CAR:'1D6' },
+                weapons: [
+                    { name:"Armas Campesinas", tags:"Piercing 0, Daño 1" }
+                ],
+                special: [],
+                charge: 'Sin carga devastadora'
+            }
+        }
+    },
+    "Imperio Mexica": {
+        rule: {
+            name: "Lanzas Rotas",
+            icon: "🐆",
+            desc: "El Imperio Mexica combate en tres Etapas de Guerra progresivas. Las bonificaciones son acumulativas. Para avanzar necesitas 5 Tokens de Guerra. Ganas tokens: +1 por unidad enemiga destruida; +2 si al final del turno tienes más unidades a 6\" del centro. Ofrenda Ritual (una vez/turno): mata D6 minis de una unidad amiga → gana +1 Token.",
+            etapas: [
+                { num:"I", name:"Premonición", req:"Inicio", effect:'Enemigos a 3" ganan +1 Estrés' },
+                { num:"II", name:"Llamado de la Guerra", req:"+5 Tokens", effect:"+1 Habilidad de Combate a todas las unidades mexicas" },
+                { num:"III", name:"Lanzas y Escudos Rotos", req:"+5 Tokens más", effect:"Las unidades obtienen Escudado 5+" }
+            ]
+        },
+        units: {
+            "Camatoz": {
+                emoji: "🦇",
+                profile: { VID:8, MOV:'10"', HA:'3+', AT:7, SAL:'3+', ESC:'4+', CAR:'3D6' },
+                weapons: [
+                    { name:"Venganza de Camatoz", tags:"Piercing -2, Daño 2" }
+                ],
+                special: [
+                    { name:"Acechador Nocturno", desc:'Si no está en combate al final de la fase de activaciones, retírala. En tu siguiente activación, colócala a más de 9" de unidades enemigas. Cuenta como su acción de ese turno.' },
+                    { name:"Cazador de Personajes", desc:"+5 ataques al atacar Personajes." },
+                    { name:"Aura de Terror", desc:'Las unidades enemigas a 6" reciben 1 token de estrés.' }
+                ],
+                charge: '4D6 impactos al 3+, Daño 2'
+            },
+            "Guerreros Jaguar": {
+                emoji: "🐆",
+                profile: { VID:3, MOV:'6"', HA:'4+', AT:3, SAL:'3+', ESC:'5+', CAR:'2D6' },
+                weapons: [
+                    { name:"Macuahuitl Jaguar", tags:"Piercing 2, Daño 2" }
+                ],
+                special: [],
+                charge: '2D6 impactos al 5+, Daño 2'
+            },
+            "Cuextecatl": {
+                emoji: "🛡",
+                profile: { VID:2, MOV:'6"', HA:'5+', AT:2, SAL:'4+', ESC:'5+', CAR:'2D6' },
+                weapons: [
+                    { name:"Macuahuitl (Base)", tags:"Piercing 2, Daño 1" },
+                    { name:"Mazo", tags:"Piercing 3, Daño 2" }
+                ],
+                special: [],
+                charge: 'Sin carga devastadora'
+            },
+            "Cuextecatl con Lanza": {
+                emoji: "🛡",
+                profile: { VID:3, MOV:'6"', HA:'5+', AT:1, SAL:'4+', ESC:'—', CAR:'2D6' },
+                weapons: [
+                    { name:"Lanza", tags:"Piercing 0, Daño 1" }
+                ],
+                special: [
+                    { name:"Muro de Lanzas", desc:"Cuando se recibe una carga frontal: tira 1 dado por cada miniatura. Por cada 4+, inflige 2 Daños Críticos." }
+                ],
+                charge: 'Sin carga devastadora'
+            },
+            "Arqueros Totolt": {
+                emoji: "🏹",
+                profile: { VID:1, MOV:'8"', HA:'5+', AT:2, SAL:'5+', ESC:'—', CAR:'1D6' },
+                weapons: [
+                    { name:"Arco (Base)", tags:'Piercing 0, Daño 1, Alcance 10", +1 ataque con esta arma' },
+                    { name:"Atlatl", tags:'Piercing 2, Daño 2, Alcance 12"' }
+                ],
+                special: [
+                    { name:"Disparo", desc:"Requiere 1 acción para cargar y 1 acción para disparar." }
+                ],
+                charge: 'Sin carga devastadora'
+            },
+            "Yaokis": {
+                emoji: "🪓",
+                profile: { VID:1, MOV:'6"', HA:'5+', AT:1, SAL:'5+', ESC:'—', CAR:'1D6' },
+                weapons: [
+                    { name:"Armas Yaokis", tags:"Piercing 0, Daño 1" }
+                ],
+                special: [],
+                charge: 'Sin carga devastadora'
+            }
+        }
+    }
+};
+
+const COSTS = {
     "Estados Cruzados": [
-        { name: "Caballero Verde", sizes: [1], costs: [22], hasSpecials: false },
-        { name: "Caballeros Templarios", sizes: [3, 5, 10], costs: [60, 100, 200], hasSpecials: false },
-        { name: "Caballeros Cruzados", sizes: [5, 10, 15, 20], costs: [60, 120, 180, 240], hasSpecials: true, baseName: "Espada (Base)",
-          options: [{n:"Lanza", p:12}, {n:"Hacha", p:13}, {n:"Martillo", p:15}] },
-        { name: "Caballeros Leprosos", sizes: [5, 10, 15, 20], costs: [60, 120, 180, 240], hasSpecials: false },
-        { name: "Hombres de Armas", sizes: [10, 15, 20, 25, 30], costs: [70, 105, 140, 175, 210], hasSpecials: true, baseName: "Espada (Base)",
-          options: [{n:"Hacha", p:8}, {n:"Martillo", p:11}] },
-        { name: "Campesinos", sizes: [10, 15, 20, 25, 30, 35, 40], costs: [40, 60, 80, 100, 120, 140, 160], hasSpecials: false }
+        { name:"Caballero Verde", sizes:[1], costs:[22], hasSpecials:false },
+        { name:"Caballeros Templarios", sizes:[3,5,10], costs:[60,100,200], hasSpecials:false },
+        { name:"Caballeros Cruzados", sizes:[5,10,15,20], costs:[60,120,180,240], hasSpecials:true, baseName:"Espada (Base)",
+          options:[{n:"Lanza",p:12},{n:"Hacha",p:13},{n:"Martillo",p:15}] },
+        { name:"Caballeros Leprosos", sizes:[5,10,15,20], costs:[60,120,180,240], hasSpecials:false },
+        { name:"Hombres de Armas", sizes:[10,15,20,25,30], costs:[70,105,140,175,210], hasSpecials:true, baseName:"Espada (Base)",
+          options:[{n:"Hacha",p:8},{n:"Martillo",p:11}] },
+        { name:"Campesinos", sizes:[10,15,20,25,30,35,40], costs:[40,60,80,100,120,140,160], hasSpecials:false }
     ],
     "Imperio Mexica": [
-        { name: "Camatoz", sizes: [1], costs: [22], hasSpecials: false },
-        { name: "Guerreros Jaguar", sizes: [5, 10, 15, 20], costs: [55, 110, 165, 220], hasSpecials: false },
-        { name: "Cuextecatl", sizes: [10, 15, 20, 25, 30], costs: [90, 135, 180, 225, 270], hasSpecials: true, baseName: "Macuahuitl (Base)",
-          options: [{n:"Mazo", p:11}] },
-        { name: "Cuextecatl con Lanza", sizes: [10, 15, 20, 25, 30], costs: [70, 105, 140, 175, 210], hasSpecials: false },
-        { name: "Arqueros Totolt", sizes: [10, 15, 20], costs: [60, 90, 120], hasSpecials: true, baseName: "Arco (Base)",
-          options: [{n:"Atlatl", p:5}] },
-        { name: "Yaokis", sizes: [30, 35, 40], costs: [120, 140, 160], hasSpecials: false }
+        { name:"Camatoz", sizes:[1], costs:[22], hasSpecials:false },
+        { name:"Guerreros Jaguar", sizes:[5,10,15,20], costs:[55,110,165,220], hasSpecials:false },
+        { name:"Cuextecatl", sizes:[10,15,20,25,30], costs:[90,135,180,225,270], hasSpecials:true, baseName:"Macuahuitl (Base)",
+          options:[{n:"Mazo",p:11}] },
+        { name:"Cuextecatl con Lanza", sizes:[10,15,20,25,30], costs:[70,105,140,175,210], hasSpecials:false },
+        { name:"Arqueros Totolt", sizes:[10,15,20], costs:[60,90,120], hasSpecials:true, baseName:"Arco (Base)",
+          options:[{n:"Atlatl",p:5}] },
+        { name:"Yaokis", sizes:[30,35,40], costs:[120,140,160], hasSpecials:false }
     ]
 };
 
+let currentFaction = "Estados Cruzados";
 let myArmy = [];
 
+// =============================================
+function setFaction(f) {
+    currentFaction = f;
+    document.getElementById('tab-ec').className = 'faction-tab' + (f === 'Estados Cruzados' ? ' active-ec' : '');
+    document.getElementById('tab-im').className = 'faction-tab' + (f === 'Imperio Mexica' ? ' active-im' : '');
+    loadCatalog();
+    renderFactionRule();
+}
+
 function loadCatalog() {
-    const f = document.getElementById('fSelect').value;
     const cat = document.getElementById('catalog');
     cat.innerHTML = '';
-    DATA[f].forEach(u => {
-        const d = document.createElement('div');
-        d.className = 'unit-card-add';
-        d.innerHTML = `<span>${u.name}</span> <span>+</span>`;
-        d.onclick = () => { 
-            myArmy.push({
-                ...u, 
-                id: Date.now(), 
-                sIdx: 0, 
-                w1Idx: -1, w1Qty: 0,
-                w2Idx: -1, w2Qty: 0
-            }); 
-            render(); 
+    const isIM = currentFaction === 'Imperio Mexica';
+    COSTS[currentFaction].forEach(u => {
+        const minCost = u.costs[0];
+        const div = document.createElement('div');
+        div.className = 'unit-add-btn';
+        div.innerHTML = `
+            <div>
+                <div class="unit-name">${STATS[currentFaction].units[u.name]?.emoji || '⚔'} ${u.name}</div>
+                <div class="unit-min-cost">desde ${minCost} pts</div>
+            </div>
+            <div class="add-icon">+</div>
+        `;
+        div.onclick = () => {
+            myArmy.push({ ...u, id: Date.now(), sIdx: 0, w1Idx: -1, w1Qty: 0, w2Idx: -1, w2Qty: 0, faction: currentFaction });
+            render();
         };
-        cat.appendChild(d);
+        cat.appendChild(div);
     });
 }
 
+function renderFactionRule() {
+    const panel = document.getElementById('factionRulePanel');
+    const rule = STATS[currentFaction].rule;
+    const isIM = currentFaction === 'Imperio Mexica';
+    const cls = isIM ? 'im' : 'ec';
+    const color = isIM ? 'var(--accent-im)' : 'var(--accent-ec)';
+
+    let etapaHTML = '';
+    if (rule.etapas) {
+        etapaHTML = `
+            <div class="rule-section-title">Etapas de Guerra</div>
+            <div style="border:1px solid var(--border)">
+                ${rule.etapas.map(e => `
+                    <div class="etapa-row">
+                        <div class="etapa-num">${e.num}</div>
+                        <div class="etapa-name">${e.name}<br><span style="font-size:0.7rem;color:var(--text-dim)">${e.req}</span></div>
+                        <div class="etapa-effect">${e.effect}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    panel.innerHTML = `
+        <div class="faction-rule-panel" id="frPanel">
+            <div class="faction-rule-header" onclick="toggleFactionRule()">
+                <div class="faction-badge ${cls}">${currentFaction}</div>
+                <h4 class="${cls}">${rule.icon} Regla de Facción: ${rule.name}</h4>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="faction-rule-body">
+                <div class="rule-section-title">Efecto</div>
+                <p style="font-size:0.83rem;color:var(--text-dim);line-height:1.5">${rule.desc}</p>
+                ${etapaHTML}
+            </div>
+        </div>
+    `;
+}
+
+function toggleFactionRule() {
+    const p = document.getElementById('frPanel');
+    if (p) p.classList.toggle('open');
+}
+
+// =============================================
 function updateQty(i, type, val) {
     const unit = myArmy[i];
     const size = unit.sizes[unit.sIdx];
     let nVal = parseInt(val) || 0;
-
-    if(type === 'w1') {
-        if(nVal + unit.w2Qty > size) nVal = size - unit.w2Qty;
+    if (type === 'w1') {
+        if (nVal + unit.w2Qty > size) nVal = size - unit.w2Qty;
         unit.w1Qty = Math.max(0, nVal);
     } else {
-        if(nVal + unit.w1Qty > size) nVal = size - unit.w1Qty;
+        if (nVal + unit.w1Qty > size) nVal = size - unit.w1Qty;
         unit.w2Qty = Math.max(0, nVal);
     }
     render();
@@ -207,101 +1009,431 @@ function updateQty(i, type, val) {
 
 function render() {
     const list = document.getElementById('armyList');
+    if (myArmy.length === 0) {
+        list.innerHTML = `<div class="empty-state"><h3>⚔ El campo de batalla espera</h3><p>Selecciona unidades del panel lateral para añadirlas a tu ejército.</p></div>`;
+        document.getElementById('armySummary').style.display = 'none';
+        document.getElementById('headerTotal').innerText = '0';
+        return;
+    }
+
     list.innerHTML = '';
-    let totalArmyPoints = 0;
+    let totalPts = 0, totalMinis = 0;
 
     myArmy.forEach((unit, i) => {
         const size = unit.sizes[unit.sIdx];
         const baseQty = size - unit.w1Qty - unit.w2Qty;
-        
         let unitTotal = unit.costs[unit.sIdx];
-        if(unit.hasSpecials) {
-            if(unit.w1Idx !== -1) unitTotal += (unit.w1Qty * unit.options[unit.w1Idx].p);
-            if(unit.w2Idx !== -1) unitTotal += (unit.w2Qty * unit.options[unit.w2Idx].p);
+        if (unit.hasSpecials) {
+            if (unit.w1Idx !== -1) unitTotal += unit.w1Qty * unit.options[unit.w1Idx].p;
+            if (unit.w2Idx !== -1) unitTotal += unit.w2Qty * unit.options[unit.w2Idx].p;
         }
+        totalPts += unitTotal;
+        totalMinis += size;
 
-        totalArmyPoints += unitTotal;
-        const card = document.createElement('div');
-        card.className = 'unit-instance';
-        card.innerHTML = `
-            <button class="btn-remove" onclick="myArmy.splice(${i},1); render();">QUITAR</button>
-            <h3 style="margin:0; font-family:'Cinzel'; color:var(--secondary-fire);">${unit.name}</h3>
-            
-            <div class="grid-controls">
-                <div>
-                    <label>Bloque de Unidad</label>
-                    <select onchange="myArmy[${i}].sIdx=this.selectedIndex; myArmy[${i}].w1Qty=0; myArmy[${i}].w2Qty=0; render();">
-                        ${unit.sizes.map((s, idx) => `<option value="${idx}" ${unit.sIdx==idx?'selected':''}>${s} Miniaturas (${unit.costs[idx]} pts)</option>`).join('')}
-                    </select>
-                </div>
-                
-                ${unit.hasSpecials ? `
-                <div class="weapon-slot">
+        const fData = STATS[unit.faction];
+        const uStats = fData?.units[unit.name];
+        const prof = uStats?.profile || {};
+        const weapons = uStats?.weapons || [];
+        const special = uStats?.special || [];
+        const chargeDevastadora = uStats?.charge || '—';
+
+        // Stat block HTML
+        const statKeys = Object.keys(prof);
+        const statHTML = statKeys.map(k => `
+            <div class="stat-cell">
+                <div class="stat-key">${k}</div>
+                <div class="stat-val">${prof[k]}</div>
+            </div>
+        `).join('');
+
+        // Weapons HTML
+        const weapHTML = weapons.length ? `
+            <div class="stat-block">
+                <div class="stat-block-title">Armas</div>
+                <table class="weapons-table">
+                    <thead><tr><th>Nombre</th><th>Estadísticas</th></tr></thead>
+                    <tbody>
+                        ${weapons.map(w => `
+                            <tr>
+                                <td class="weapon-name">${w.name}</td>
+                                <td><span class="weapon-tags">${w.tags}</span></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        ` : '';
+
+        // Charge HTML
+        const chargeHTML = `
+            <div class="stat-block">
+                <div class="stat-block-title">Carga Devastadora</div>
+                <div style="padding:8px 10px;font-size:0.85rem;color:var(--gold)">${chargeDevastadora}</div>
+            </div>
+        `;
+
+        // Special rules
+        const specialHTML = special.length ? `
+            <div class="special-rules">
+                <div class="stat-block-title">Reglas Especiales</div>
+                ${special.map(r => `
+                    <div class="special-rule-item">
+                        <div class="rule-name">${r.name}</div>
+                        <div class="rule-desc">${r.desc}</div>
+                    </div>
+                `).join('')}
+            </div>
+        ` : '';
+
+        // Weapon upgrade controls
+        const upgradeHTML = unit.hasSpecials ? `
+            <div class="weapon-upgrade-box">
+                <div class="control-group">
                     <label>Mejora de Arma 1</label>
-                    <select onchange="myArmy[${i}].w1Idx=this.selectedIndex - 1; myArmy[${i}].w1Qty=0; render();">
-                        <option value="0">--- Ninguna ---</option>
-                        ${unit.options.map((o, idx) => `<option value="${idx+1}" ${unit.w1Idx==idx?'selected':''}>${o.n} (${o.p} pts/u)</option>`).join('')}
+                    <select onchange="myArmy[${i}].w1Idx=this.selectedIndex-1; myArmy[${i}].w1Qty=0; render();">
+                        <option>— Ninguna —</option>
+                        ${unit.options.map((o, idx) => `<option value="${idx}" ${unit.w1Idx===idx?'selected':''}>${o.n} (+${o.p} pts/mini)</option>`).join('')}
                     </select>
-                    ${unit.w1Idx !== -1 ? `<label style="margin-top:5px">Nº Minis</label><input type="number" value="${unit.w1Qty}" min="0" max="${size}" onchange="updateQty(${i}, 'w1', this.value)">` : ''}
+                    ${unit.w1Idx !== -1 ? `
+                        <div style="margin-top:8px">
+                            <label># Miniaturas con esta arma</label>
+                            <input type="number" value="${unit.w1Qty}" min="0" max="${size}" onchange="updateQty(${i},'w1',this.value)">
+                        </div>
+                    ` : ''}
                 </div>
-                <div class="weapon-slot">
+            </div>
+            <div class="weapon-upgrade-box" style="margin-top:8px">
+                <div class="control-group">
                     <label>Mejora de Arma 2</label>
-                    <select onchange="myArmy[${i}].w2Idx=this.selectedIndex - 1; myArmy[${i}].w2Qty=0; render();">
-                        <option value="0">--- Ninguna ---</option>
-                        ${unit.options.map((o, idx) => `<option value="${idx+1}" ${unit.w2Idx==idx?'selected':''}>${o.n} (${o.p} pts/u)</option>`).join('')}
+                    <select onchange="myArmy[${i}].w2Idx=this.selectedIndex-1; myArmy[${i}].w2Qty=0; render();">
+                        <option>— Ninguna —</option>
+                        ${unit.options.map((o, idx) => `<option value="${idx}" ${unit.w2Idx===idx?'selected':''}>${o.n} (+${o.p} pts/mini)</option>`).join('')}
                     </select>
-                    ${unit.w2Idx !== -1 ? `<label style="margin-top:5px">Nº Minis</label><input type="number" value="${unit.w2Qty}" min="0" max="${size}" onchange="updateQty(${i}, 'w2', this.value)">` : ''}
+                    ${unit.w2Idx !== -1 ? `
+                        <div style="margin-top:8px">
+                            <label># Miniaturas con esta arma</label>
+                            <input type="number" value="${unit.w2Qty}" min="0" max="${size}" onchange="updateQty(${i},'w2',this.value)">
+                        </div>
+                    ` : ''}
                 </div>
-                ` : '<div></div><div></div>'}
             </div>
-            
-            <div style="font-size: 0.8rem; margin-top: 10px; color: #888;">
-                Equipamiento: ${baseQty}x ${unit.baseName || 'Base'} 
-                ${unit.w1Idx !== -1 && unit.w1Qty > 0 ? ', ' + unit.w1Qty + 'x ' + unit.options[unit.w1Idx].n : ''} 
-                ${unit.w2Idx !== -1 && unit.w2Qty > 0 ? ', ' + unit.w2Qty + 'x ' + unit.options[unit.w2Idx].n : ''}
-            </div>
+        ` : '';
 
-            <div class="subtotal-area">SUBTOTAL: ${unitTotal} PTS</div>
+        const equipLine = `${baseQty}× ${unit.baseName || 'Base'}${unit.w1Idx !== -1 && unit.w1Qty > 0 ? ', ' + unit.w1Qty + '× ' + unit.options[unit.w1Idx].n : ''}${unit.w2Idx !== -1 && unit.w2Qty > 0 ? ', ' + unit.w2Qty + '× ' + unit.options[unit.w2Idx].n : ''}`;
+
+        const card = document.createElement('div');
+        card.className = 'unit-card';
+        card.innerHTML = `
+            <div class="unit-card-header">
+                <div class="unit-card-name">${uStats?.emoji || '⚔'} ${unit.name}</div>
+                <div class="unit-card-header-right">
+                    <div class="unit-subtotal">${unitTotal} PTS</div>
+                    <button class="btn-remove" onclick="myArmy.splice(${i},1); render();">QUITAR</button>
+                </div>
+            </div>
+            <div class="unit-card-body">
+                <!-- Stat block -->
+                <div class="stat-block">
+                    <div class="stat-block-title">Perfil</div>
+                    <div class="stat-row">${statHTML}</div>
+                </div>
+
+                ${weapHTML}
+                ${chargeHTML}
+                ${specialHTML}
+
+                <hr class="section-divider">
+
+                <!-- Controls -->
+                <div class="unit-controls">
+                    <div class="control-group">
+                        <label>Bloque de Unidad</label>
+                        <select onchange="myArmy[${i}].sIdx=this.selectedIndex; myArmy[${i}].w1Qty=0; myArmy[${i}].w2Qty=0; render();">
+                            ${unit.sizes.map((s, idx) => `<option value="${idx}" ${unit.sIdx===idx?'selected':''}>${s} Miniaturas — ${unit.costs[idx]} pts</option>`).join('')}
+                        </select>
+                    </div>
+                    ${unit.hasSpecials ? `<div>${upgradeHTML}</div><div></div>` : '<div></div><div></div>'}
+                </div>
+
+                ${unit.hasSpecials ? `
+                    <div class="equip-summary">Composición: ${equipLine}</div>
+                ` : ''}
+            </div>
         `;
         list.appendChild(card);
     });
-    document.getElementById('totalPoints').innerText = totalArmyPoints;
+
+    document.getElementById('headerTotal').innerText = totalPts;
+    document.getElementById('sumPts').innerText = totalPts;
+    document.getElementById('sumUnits').innerText = myArmy.length;
+    document.getElementById('sumMinis').innerText = totalMinis;
+    document.getElementById('armySummary').style.display = 'flex';
 }
 
+function clearArmy() {
+    if (myArmy.length === 0) return;
+    if (confirm('¿Limpiar el ejército?')) { myArmy = []; render(); }
+}
+
+// =============================================
+// PDF Generator — WarOrgan-style layout
+// =============================================
 function generatePDF() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const title = document.getElementById('armyName').value || "LISTA DE BATALLA";
-    const faction = document.getElementById('fSelect').value;
-    const total = document.getElementById('totalPoints').innerText;
+    const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    const armyName = document.getElementById('armyName').value || 'LISTA DE BATALLA';
+    const total = document.getElementById('headerTotal').innerText;
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 14;
+    let y = margin;
 
-    doc.setFont("helvetica", "bold"); doc.setFontSize(22);
-    doc.text(title.toUpperCase(), 14, 20);
-    doc.setFontSize(10);
-    doc.text(`FACCION: ${faction.toUpperCase()} | TOTAL: ${total} PTS`, 14, 28);
+    // Color helpers
+    const FIRE = [255,102,0];
+    const GOLD = [212,160,23];
+    const DARK = [18,18,18];
+    const DARKGRAY = [30,30,30];
+    const GRAY = [55,55,55];
+    const TEXT = [220,220,220];
+    const DIMTEXT = [140,140,140];
+    const WHITE = [255,255,255];
 
-    const body = myArmy.map(u => {
+    function fillRect(x, ry, w, h, color) {
+        doc.setFillColor(...color);
+        doc.rect(x, ry, w, h, 'F');
+    }
+
+    function textLine(txt, tx, ty, size, color, style='normal', align='left') {
+        doc.setFontSize(size);
+        doc.setFont('helvetica', style);
+        doc.setTextColor(...color);
+        doc.text(txt, tx, ty, { align });
+    }
+
+    function drawSeparator(sy, color=GRAY) {
+        doc.setDrawColor(...color);
+        doc.setLineWidth(0.3);
+        doc.line(margin, sy, pageW - margin, sy);
+    }
+
+    function checkPage(needed=20) {
+        if (y + needed > pageH - 10) {
+            doc.addPage();
+            y = margin;
+            drawHeader();
+        }
+    }
+
+    function drawHeader() {
+        fillRect(0, 0, pageW, 12, DARK);
+        doc.setDrawColor(...FIRE);
+        doc.setLineWidth(0.5);
+        doc.line(0, 12, pageW, 12);
+        textLine('DOOM EMPIRE', margin, 8, 9, FIRE, 'bold');
+        textLine(armyName.toUpperCase(), pageW/2, 8, 8, WHITE, 'bold', 'center');
+        textLine(`${currentFactionForPDF().toUpperCase()} | ${total} PTS`, pageW - margin, 8, 7, GOLD, 'normal', 'right');
+    }
+
+    // Title page header (full)
+    fillRect(0, 0, pageW, 32, DARK);
+    doc.setDrawColor(...FIRE);
+    doc.setLineWidth(1);
+    doc.line(0, 32, pageW, 32);
+
+    textLine('DOOM EMPIRE', margin, 10, 18, FIRE, 'bold');
+    textLine('WAR GAME BUILDER', margin, 18, 8, DIMTEXT, 'normal');
+
+    textLine(armyName.toUpperCase(), pageW/2, 10, 14, WHITE, 'bold', 'center');
+    textLine(currentFactionForPDF().toUpperCase(), pageW/2, 18, 8, GOLD, 'normal', 'center');
+
+    textLine(`${total} PTS`, pageW - margin, 9, 20, FIRE, 'bold', 'right');
+    textLine('TOTAL', pageW - margin, 16, 7, DIMTEXT, 'normal', 'right');
+
+    y = 40;
+
+    // Faction rule block
+    const rule = STATS[currentFaction].rule;
+    checkPage(35);
+    fillRect(margin, y, pageW - margin*2, 7, DARKGRAY);
+    textLine(`REGLA DE FACCIÓN: ${rule.name.toUpperCase()}`, margin + 3, y + 5, 7, GOLD, 'bold');
+    y += 9;
+
+    const ruleLines = doc.splitTextToSize(rule.desc, pageW - margin*2 - 4);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...DIMTEXT);
+    ruleLines.forEach(line => {
+        checkPage(5);
+        doc.text(line, margin + 2, y);
+        y += 4;
+    });
+
+    if (rule.etapas) {
+        y += 2;
+        checkPage(8);
+        textLine('ETAPAS DE GUERRA', margin + 2, y, 6, GOLD, 'bold');
+        y += 4;
+        rule.etapas.forEach(e => {
+            checkPage(7);
+            fillRect(margin, y, 14, 6, GRAY);
+            textLine(e.num, margin + 7, y + 4.5, 7, WHITE, 'bold', 'center');
+            fillRect(margin + 14, y, 60, 6, DARKGRAY);
+            textLine(e.name.toUpperCase(), margin + 16, y + 4.5, 6, WHITE, 'bold');
+            textLine(e.effect, margin + 80, y + 4.5, 6, DIMTEXT, 'normal');
+            y += 7;
+        });
+    }
+
+    y += 6;
+    drawSeparator(y, FIRE);
+    y += 8;
+
+    // ===== ARMY LIST TABLE =====
+    checkPage(15);
+    textLine('LISTA DE EJÉRCITO', margin, y, 10, WHITE, 'bold');
+    y += 8;
+
+    const armyRows = myArmy.map(u => {
         const size = u.sizes[u.sIdx];
         const bQty = size - u.w1Qty - u.w2Qty;
         let uCost = u.costs[u.sIdx];
-        let desc = `${bQty}x ${u.baseName || 'Base'}`;
-        if(u.hasSpecials) {
-            if(u.w1Idx !== -1 && u.w1Qty > 0) {
-                uCost += u.w1Qty * u.options[u.w1Idx].p;
-                desc += `, ${u.w1Qty}x ${u.options[u.w1Idx].n}`;
-            }
-            if(u.w2Idx !== -1 && u.w2Qty > 0) {
-                uCost += u.w2Qty * u.options[u.w2Idx].p;
-                desc += `, ${u.w2Qty}x ${u.options[u.w2Idx].n}`;
-            }
+        let desc = `${bQty}× ${u.baseName || 'Base'}`;
+        if (u.hasSpecials) {
+            if (u.w1Idx !== -1 && u.w1Qty > 0) { uCost += u.w1Qty * u.options[u.w1Idx].p; desc += `, ${u.w1Qty}× ${u.options[u.w1Idx].n}`; }
+            if (u.w2Idx !== -1 && u.w2Qty > 0) { uCost += u.w2Qty * u.options[u.w2Idx].p; desc += `, ${u.w2Qty}× ${u.options[u.w2Idx].n}`; }
         }
-        return [u.name, size, desc, `${uCost} pts`];
+        return [u.name, String(size), desc, `${uCost} pts`];
     });
 
-    doc.autoTable({ startY: 35, head: [['UNIDAD', 'MINIS', 'COMPOSICION', 'PUNTOS']], body: body, theme: 'grid', headStyles: {fillColor:[255, 102, 0]} });
-    doc.save("Lista_Doom_Empire.pdf");
+    doc.autoTable({
+        startY: y,
+        head: [['UNIDAD', 'MINIS', 'COMPOSICIÓN', 'PUNTOS']],
+        body: armyRows,
+        foot: [['', '', 'TOTAL', `${total} PTS`]],
+        theme: 'plain',
+        styles: { font:'helvetica', fontSize:8, textColor:TEXT, fillColor:DARK, cellPadding:3 },
+        headStyles: { fillColor:GRAY, textColor:WHITE, fontStyle:'bold', fontSize:7, letterSpacing:1 },
+        footStyles: { fillColor:DARK, textColor:FIRE, fontStyle:'bold', fontSize:9 },
+        alternateRowStyles: { fillColor:DARKGRAY },
+        columnStyles: { 0:{fontStyle:'bold', textColor:GOLD}, 1:{halign:'center'}, 3:{halign:'right', textColor:FIRE} },
+        margin: { left:margin, right:margin },
+        tableLineWidth: 0.1,
+        tableLineColor: GRAY
+    });
+
+    y = doc.lastAutoTable.finalY + 12;
+
+    // ===== UNIT PROFILES =====
+    drawSeparator(y, FIRE);
+    y += 8;
+    checkPage(15);
+    textLine('PERFILES DE UNIDAD', margin, y, 10, WHITE, 'bold');
+    y += 10;
+
+    myArmy.forEach((unit, idx) => {
+        const uStats = STATS[unit.faction]?.units[unit.name];
+        if (!uStats) return;
+        const prof = uStats.profile || {};
+        checkPage(50);
+
+        // Unit name bar
+        fillRect(margin, y, pageW - margin*2, 8, GRAY);
+        doc.setDrawColor(...FIRE);
+        doc.setLineWidth(0.5);
+        doc.line(margin, y, margin, y + 8);
+        doc.line(margin + 3, y, margin + 3, y + 8);
+        textLine(unit.name.toUpperCase(), margin + 7, y + 5.5, 8, WHITE, 'bold');
+        const uCostHere = (() => {
+            let c = unit.costs[unit.sIdx];
+            if (unit.hasSpecials) {
+                if (unit.w1Idx !== -1) c += unit.w1Qty * unit.options[unit.w1Idx].p;
+                if (unit.w2Idx !== -1) c += unit.w2Qty * unit.options[unit.w2Idx].p;
+            }
+            return c;
+        })();
+        textLine(`${uCostHere} PTS`, pageW - margin - 2, y + 5.5, 8, FIRE, 'bold', 'right');
+        y += 10;
+
+        // Profile stats row
+        const statKeys = Object.keys(prof);
+        const cellW = (pageW - margin*2) / statKeys.length;
+        fillRect(margin, y, pageW - margin*2, 5, DARKGRAY);
+        statKeys.forEach((k, ki) => {
+            textLine(k, margin + ki * cellW + cellW/2, y + 4, 5.5, DIMTEXT, 'bold', 'center');
+        });
+        y += 5;
+        fillRect(margin, y, pageW - margin*2, 7, DARK);
+        doc.setDrawColor(...GRAY);
+        doc.setLineWidth(0.2);
+        statKeys.forEach((k, ki) => {
+            const val = String(prof[k]);
+            textLine(val, margin + ki * cellW + cellW/2, y + 5, 7.5, WHITE, 'bold', 'center');
+            if (ki < statKeys.length - 1) doc.line(margin + (ki+1)*cellW, y, margin + (ki+1)*cellW, y + 7);
+        });
+        y += 9;
+
+        // Weapons
+        if (uStats.weapons.length > 0) {
+            checkPage(8 + uStats.weapons.length * 7);
+            fillRect(margin, y, pageW - margin*2, 5, DARKGRAY);
+            textLine('ARMAS', margin + 3, y + 4, 5.5, GOLD, 'bold');
+            y += 5;
+            uStats.weapons.forEach(w => {
+                checkPage(7);
+                fillRect(margin, y, pageW - margin*2, 6.5, DARK);
+                textLine(w.name, margin + 4, y + 4.5, 7, GOLD, 'bold');
+                textLine(w.tags, pageW - margin - 3, y + 4.5, 6.5, DIMTEXT, 'normal', 'right');
+                doc.setDrawColor(...GRAY);
+                doc.setLineWidth(0.1);
+                doc.line(margin, y + 6.5, pageW - margin, y + 6.5);
+                y += 7;
+            });
+        }
+
+        // Charge devastadora
+        checkPage(12);
+        fillRect(margin, y, pageW - margin*2, 5, DARKGRAY);
+        textLine('CARGA DEVASTADORA', margin + 3, y + 4, 5.5, GOLD, 'bold');
+        y += 5;
+        fillRect(margin, y, pageW - margin*2, 7, DARK);
+        textLine(uStats.charge, margin + 4, y + 5, 7, TEXT, 'normal');
+        y += 9;
+
+        // Special rules
+        if (uStats.special.length > 0) {
+            checkPage(8 + uStats.special.length * 14);
+            fillRect(margin, y, pageW - margin*2, 5, DARKGRAY);
+            textLine('REGLAS ESPECIALES', margin + 3, y + 4, 5.5, GOLD, 'bold');
+            y += 5;
+            uStats.special.forEach(r => {
+                checkPage(16);
+                fillRect(margin, y, pageW - margin*2, 5.5, DARK);
+                textLine(r.name.toUpperCase(), margin + 4, y + 4, 7, FIRE, 'bold');
+                y += 5.5;
+                const lines = doc.splitTextToSize(r.desc, pageW - margin*2 - 8);
+                lines.forEach(line => {
+                    checkPage(5);
+                    fillRect(margin, y, pageW - margin*2, 4.5, DARK);
+                    textLine(line, margin + 6, y + 3.5, 6.5, DIMTEXT, 'normal');
+                    y += 4.5;
+                });
+            });
+        }
+
+        y += 8;
+    });
+
+    doc.save(`DoomEmpire_${armyName.replace(/\s+/g,'_') || 'Lista'}.pdf`);
 }
-loadCatalog();
+
+function currentFactionForPDF() { return currentFaction; }
+
+// =============================================
+// Init
+setFaction('Estados Cruzados');
+renderFactionRule();
+render();
 </script>
+
 </body>
 </html>
