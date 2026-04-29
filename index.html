@@ -1105,38 +1105,7 @@ function render() {
         ` : '';
 
         // Weapon upgrade controls
-        const upgradeHTML = unit.hasSpecials ? `
-            <div class="weapon-upgrade-box">
-                <div class="control-group">
-                    <label>Mejora de Arma 1</label>
-                    <select onchange="myArmy[${i}].w1Idx=this.selectedIndex-1; myArmy[${i}].w1Qty=0; render();">
-                        <option>— Ninguna —</option>
-                        ${unit.options.map((o, idx) => `<option value="${idx}" ${unit.w1Idx===idx?'selected':''}>${o.n} (+${o.p} pts/mini)</option>`).join('')}
-                    </select>
-                    ${unit.w1Idx !== -1 ? `
-                        <div style="margin-top:8px">
-                            <label># Miniaturas con esta arma</label>
-                            <input type="number" value="${unit.w1Qty}" min="0" max="${size}" onchange="updateQty(${i},'w1',this.value)">
-                        </div>
-                    ` : ''}
-                </div>
-            </div>
-            <div class="weapon-upgrade-box" style="margin-top:8px">
-                <div class="control-group">
-                    <label>Mejora de Arma 2</label>
-                    <select onchange="myArmy[${i}].w2Idx=this.selectedIndex-1; myArmy[${i}].w2Qty=0; render();">
-                        <option>— Ninguna —</option>
-                        ${unit.options.map((o, idx) => `<option value="${idx}" ${unit.w2Idx===idx?'selected':''}>${o.n} (+${o.p} pts/mini)</option>`).join('')}
-                    </select>
-                    ${unit.w2Idx !== -1 ? `
-                        <div style="margin-top:8px">
-                            <label># Miniaturas con esta arma</label>
-                            <input type="number" value="${unit.w2Qty}" min="0" max="${size}" onchange="updateQty(${i},'w2',this.value)">
-                        </div>
-                    ` : ''}
-                </div>
-            </div>
-        ` : '';
+                // weapon upgrades now inline in controls
 
         const equipLine = `${baseQty}× ${unit.baseName || 'Base'}${unit.w1Idx !== -1 && unit.w1Qty > 0 ? ', ' + unit.w1Qty + '× ' + unit.options[unit.w1Idx].n : ''}${unit.w2Idx !== -1 && unit.w2Qty > 0 ? ', ' + unit.w2Qty + '× ' + unit.options[unit.w2Idx].n : ''}`;
 
@@ -1171,11 +1140,46 @@ function render() {
                             ${unit.sizes.map((s, idx) => `<option value="${idx}" ${unit.sIdx===idx?'selected':''}>${s} Miniaturas — ${unit.costs[idx]} pts</option>`).join('')}
                         </select>
                     </div>
-                    ${unit.hasSpecials ? `<div>${upgradeHTML}</div><div></div>` : '<div></div><div></div>'}
+                    ${unit.hasSpecials ? `
+                    <div class="weapon-upgrade-box">
+                        <div class="control-group">
+                            <label>Mejora de Arma 1</label>
+                            <select onchange="myArmy[${i}].w1Idx=this.selectedIndex-1; myArmy[${i}].w1Qty=0; render();">
+                                <option>— Ninguna —</option>
+                                ${unit.options.map((o, oi) => `<option value="${oi}" ${unit.w1Idx===oi?'selected':''}>${o.n} (+${o.p} pts/mini)</option>`).join('')}
+                            </select>
+                            ${unit.w1Idx !== -1 ? `
+                                <div style="margin-top:10px">
+                                    <label># Minis con esta arma (máx ${size - unit.w2Qty})</label>
+                                    <input type="number" value="${unit.w1Qty}" min="0" max="${size - unit.w2Qty}" onchange="updateQty(${i},'w1',this.value)">
+                                </div>
+                                <div style="margin-top:6px;font-size:0.82rem;color:var(--fire);font-weight:700">+${unit.w1Qty * (unit.w1Idx !== -1 ? unit.options[unit.w1Idx].p : 0)} pts</div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="weapon-upgrade-box">
+                        <div class="control-group">
+                            <label>Mejora de Arma 2</label>
+                            <select onchange="myArmy[${i}].w2Idx=this.selectedIndex-1; myArmy[${i}].w2Qty=0; render();">
+                                <option>— Ninguna —</option>
+                                ${unit.options.map((o, oi) => `<option value="${oi}" ${unit.w2Idx===oi?'selected':''}>${o.n} (+${o.p} pts/mini)</option>`).join('')}
+                            </select>
+                            ${unit.w2Idx !== -1 ? `
+                                <div style="margin-top:10px">
+                                    <label># Minis con esta arma (máx ${size - unit.w1Qty})</label>
+                                    <input type="number" value="${unit.w2Qty}" min="0" max="${size - unit.w1Qty}" onchange="updateQty(${i},'w2',this.value)">
+                                </div>
+                                <div style="margin-top:6px;font-size:0.82rem;color:var(--fire);font-weight:700">+${unit.w2Qty * (unit.w2Idx !== -1 ? unit.options[unit.w2Idx].p : 0)} pts</div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    ` : '<div></div><div></div>'}
                 </div>
 
                 ${unit.hasSpecials ? `
-                    <div class="equip-summary">Composición: ${equipLine}</div>
+                    <div class="equip-summary">
+                        Composición: ${equipLine}
+                    </div>
                 ` : ''}
             </div>
         `;
